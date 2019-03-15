@@ -1,4 +1,4 @@
-# Linux Backup
+# Funkyboy Zone Backup
 [funkyboy.zone](https://funkyboy.zone) Backup tool.
 
 # Table Of Contents
