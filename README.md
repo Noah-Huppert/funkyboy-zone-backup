@@ -1,4 +1,4 @@
-# Funkyboy Zone Backup
+# Funky Boy Zone Backup
 [funkyboy.zone](https://funkyboy.zone) Backup tool.
 
 # Table Of Contents
