@@ -41,7 +41,9 @@ For example to configure a module named `ExampleModule` one could create a
 configuration section named `ExampleModule.Foo` or `ExampleModule.Bar`.
 
 ### Files
-The `Files` module backs up normal files.
+The `Files` module backs up normal files.  
+
+All configuration parameters can include shell globs.
 
 Configuration:
 
@@ -49,6 +51,9 @@ Configuration:
 [Files.XXXXX]
 # List of files to backup
 Files = [ "..." ]
+
+# Files to ignore
+Ignore = [ "..." ]
 ```
 
 ### Prometheus
