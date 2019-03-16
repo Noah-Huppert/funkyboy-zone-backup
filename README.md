@@ -9,6 +9,11 @@ File backup tool.
 Creates a GZip-ed tar ball and uploads it to a S3 compatible object 
 storage service.
 
+**Why "Mountain Backup"?**  
+A reference to 
+["Steel Mountain"](https://mrrobot.fandom.com/wiki/Steel_Mountain) in the show
+Mr. Robot.  
+
 # Configure
 The tool's behavior is specified in a TOML configuration file.  
 
