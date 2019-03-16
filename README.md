@@ -27,6 +27,7 @@ KeyID = "..."
 
 # Storage API Secret Access Key
 SecretAccessKey = "..."
+```
 
 ## Backup Configuration
 The mountain backup tools provides different modules to handle unique 
