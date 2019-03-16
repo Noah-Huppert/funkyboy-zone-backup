@@ -48,7 +48,7 @@ Configuration:
 ```toml
 [Files.XXXXX]
 # List of files to backup
-Files = [ ... ]
+Files = [ "..." ]
 ```
 
 ### Prometheus
