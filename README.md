@@ -35,7 +35,10 @@ backup scenarios. These modules are configured by creating sub sections in the
 configuration file under the modules name's.  
 
 The names of these sub-sections do not matter. The only constraint is that they 
-should be unique in that section.
+should be unique in that section.  
+
+For example to configure a module named `ExampleModule` one could create a 
+configuration section named `ExampleModule.Foo` or `ExampleModule.Bar`.
 
 ### Files
 The `Files` module backs up normal files.
