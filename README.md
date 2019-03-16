@@ -1,5 +1,5 @@
 # Funky Boy Zone Backup
-[funkyboy.zone](https://funkyboy.zone) Backup tool.
+[funkyboy.zone](https://funkyboy.zone) backup tool.
 
 # Table Of Contents
 - [Overview](#overview)
