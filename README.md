@@ -52,8 +52,8 @@ Configuration:
 # List of files to backup
 Files = [ "..." ]
 
-# Files to ignore
-Ignore = [ "..." ]
+# Files / directories to exclude from backup
+Exclude = [ "..." ]
 ```
 
 ### Prometheus
