@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Noah-Huppert/funkyboy-zone-backup/config"
+	"github.com/Noah-Huppert/mountain-backup/config"
 
 	"github.com/Noah-Huppert/goconf"
 	"github.com/Noah-Huppert/golog"
@@ -50,4 +50,6 @@ func main() {
 		logger.Fatalf("error creating tar file \"%s\": %s", tarFPath,
 			err.Error())
 	}
+
+	// {{{1 Perform straight forward backup of files
 }
