@@ -1,16 +1,13 @@
 package config
 
-// Config holds tool configuration
+// Config holds tool configuration.
 type Config struct {
-	// DigtalOcean configuration
-	DigitalOcean DigitalOceanConfig `validate:"required"`
-}
+	// Upload configuration.
+	Upload UploadConfig `validate:"required"`
 
-// DigitalOceanConfig holds Digital Ocean configuration
-type DigitalOceanConfig struct {
-	// KeyID for spaces API
-	KeyID string `validate:"required"`
+	// Files holds configuration of standard files to backup.
+	Files map[string]FileConfig
 
-	// AccessKey for spaces API
-	AccessKey string `validate:"required"`
+	// Prometheus holds configuration for Prometheus databases to backup.
+	Prometheus map[string]PrometheusConfig
 }
