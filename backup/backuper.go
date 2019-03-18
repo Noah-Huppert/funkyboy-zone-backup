@@ -1,11 +1,11 @@
 package backup
 
 import (
-	"io"
+	"archive/tar"
 )
 
 // Backuper performs the action of backing up a file.
 type Backuper interface {
 	// Backup files to w.
-	Backup(w io.Writer) error
+	Backup(w *tar.Writer) error
 }
