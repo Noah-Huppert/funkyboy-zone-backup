@@ -4,6 +4,7 @@ File backup tool.
 # Table Of Contents
 - [Overview](#overview)
 - [Configure](#configure)
+- [Develop](#develop)
 
 # Overview
 Creates a GZip-ed tar ball and uploads it to a S3 compatible object 
@@ -108,3 +109,8 @@ AdminAPIHost = "localhost:9090"
 # Directory in which Prometheus data is stored
 DataDirectory = "/var/lib/prometheus"
 ```
+
+# Develop
+To develop mountain backup you must run Prometheus and Prometheus Push Gateway locally.  
+
+The `dev` make target starts both Prometheus and Prometheus Push Gateway using Docker.
