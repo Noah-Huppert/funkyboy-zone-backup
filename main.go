@@ -149,6 +149,7 @@ func main() {
 		logger.Fatalf("error initializing s3 compatible object storage API client: %s", err.Error())
 	}
 
+	// {{{2 Upload
 	uploadOpts := minio.PutObjectOptions{
 		ContentType: "application/x-tar",
 	}
