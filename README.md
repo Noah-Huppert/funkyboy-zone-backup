@@ -26,13 +26,16 @@ Configuration:
 ```toml
 [Upload]
 # Storage API host
-Host = "..."
+Endpoint = "..."
 
 # Storage API Key ID
 KeyID = "..."
 
 # Storage API Secret Access Key
 SecretAccessKey = "..."
+
+# Name of bucket in which to upload backup
+Bucket = "backups"
 
 # (Optional) Backup name format without file extension, can use strftime symbols
 # Defaults to value below
