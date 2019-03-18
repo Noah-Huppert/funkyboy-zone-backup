@@ -53,7 +53,11 @@ func main() {
 		reqUrl.Path = fmt.Sprintf("/metrics/job/backup/host/%s", cfg.Metrics.LabelHost)
 
 		// {{{2 Construct body
-		bodyStr := fmt.Sprintf("backup_success %d\nbackup_number_files %d", backupSuccess, backupNumberFiles)
+		backupSuccessInt := 1
+		if !backupSuccess {
+			backupSuccessInt = 0
+		}
+		bodyStr := fmt.Sprintf("backup_success %d\nbackup_number_files %d\n", backupSuccessInt, backupNumberFiles)
 		bodyBytes := bytes.NewReader([]byte(bodyStr))
 
 		// {{{2 Make request
@@ -62,7 +66,7 @@ func main() {
 			logger.Fatalf("error pushing metrics to Prometheus Push Gateway: %s", err.Error())
 		}
 
-		if resp.StatusCode != http.StatusOK {
+		if resp.StatusCode != http.StatusAccepted {
 			logger.Error("error pushing metrics to Prometheus Push Gateway, received non OK "+
 				"response, status: %s", resp.Status)
 
