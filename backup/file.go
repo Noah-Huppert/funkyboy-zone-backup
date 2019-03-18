@@ -1,15 +1,16 @@
 package backup
 
 import (
+	"archive/tar"
 	"fmt"
-	"io"
+	"os"
 	"path/filepath"
 
 	"github.com/Noah-Huppert/mountain-backup/config"
 )
 
-// FileBackuper backs up files.
-type FileBackuper struct {
+// FilesBackuper backs up files.
+type FilesBackuper struct {
 	// Cfg configures which files to backup.
 	Cfg config.FileConfig
 }
@@ -29,16 +30,38 @@ func globArray(in []string) ([]string, error) {
 		}
 	}
 
-	return out
+	return out, nil
 }
 
 // allFiles walks a directory and returns an array of all the files in the directory.
-func allFiles(dir string) ([]string, error) {
-	// TODO: Walk and return array
+func allFiles(walkPaths []string) ([]string, error) {
+	files := []string{}
+
+	for _, walkPath := range walkPaths {
+		err := filepath.Walk(walkPath, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			if info.IsDir() {
+				return nil
+			}
+
+			files = append(files, path)
+
+			return nil
+		})
+
+		if err != nil {
+			return nil, fmt.Errorf("error walking \"%s\": %s", walkPath, err.Error())
+		}
+	}
+
+	return files, nil
 }
 
 // Backup configured files.
-func (b FileBackuper) Backup(w io.Writer) error {
+func (b FilesBackuper) Backup(w *tar.Writer) error {
 	// {{{1 Expand any shell globs in Cfg
 	// {{{2 Cfg.Files
 	globedFiles, err := globArray(b.Cfg.Files)
@@ -65,6 +88,26 @@ func (b FileBackuper) Backup(w io.Writer) error {
 		return fmt.Errorf("error creating list of all files in Exclude configuration field: %s", err.Error())
 	}
 
-	// TODO: Remove excluded files from list
-	// TODO: Write files to w
+	// {{{1 Remove excluded files
+	backupFiles := []string{}
+
+	for _, f := range walkedFiles {
+		excluded := false
+		for _, e := range walkedExclude {
+			if f == e {
+				excluded = true
+				break
+			}
+		}
+
+		if excluded {
+			break
+		}
+
+		backupFiles = append(backupFiles, f)
+	}
+
+	// {{{1 Write files
+	fmt.Printf("%#v\n", backupFiles)
+	return nil
 }
