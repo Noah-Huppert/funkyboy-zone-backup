@@ -3,6 +3,7 @@ package main
 import (
 	"archive/tar"
 	"bytes"
+	"compress/gzip"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -17,6 +18,7 @@ import (
 	"github.com/Noah-Huppert/goconf"
 	"github.com/Noah-Huppert/golog"
 	"github.com/jehiah/go-strftime"
+	"github.com/minio/minio-go"
 	"github.com/thecodeteam/goodbye"
 )
 
@@ -79,36 +81,43 @@ func main() {
 		}
 	})
 
-	// {{{1 Tar file
+	// {{{1 Open tar gz file
 	// {{{2 Open tar file
-	fName := strftime.Format(cfg.Upload.Format, time.Now())
-	tarFPath := fmt.Sprintf("/var/tmp/%s.tar", fName)
+	backupName := fmt.Sprintf("%s.tar.gz", strftime.Format(cfg.Upload.Format, time.Now()))
+	fName := fmt.Sprintf("/var/tmp/%s", backupName)
 
-	tarF, err := os.Create(tarFPath)
-	defer func() {
-		if err = tarF.Close(); err != nil {
-			logger.Fatalf("error closing tar file \"%s\": %s",
-				tarFPath, err.Error())
-		}
-	}()
-	defer func() {
-		if err = os.Remove(tarFPath); err != nil {
-			logger.Fatalf("error removing tar file \"%s\": %s",
-				tarFPath, err.Error())
-		}
-	}()
+	tarGzF, err := os.Create(fName)
 
 	if err != nil {
-		logger.Fatalf("error creating tar file \"%s\": %s", tarFPath,
-			err.Error())
+		logger.Fatalf("error creating tar.gz file \"%s\": %s", fName, err.Error())
 	}
 
+	defer func() {
+		if err = tarGzF.Close(); err != nil {
+			logger.Fatalf("error closing tar.gz file \"%s\": %s", fName, err.Error())
+		}
+	}()
+	defer func() {
+		if err = os.Remove(fName); err != nil {
+			logger.Fatalf("error removing tar.gz file \"%s\": %s", fName, err.Error())
+		}
+	}()
+
+	// {{{2 Create gzip writer
+	gzipW := gzip.NewWriter(tarGzF)
+
+	defer func() {
+		if err := gzipW.Close(); err != nil {
+			logger.Fatalf("error closing gzip writer \"%s\": %s", fName, err.Error())
+		}
+	}()
+
 	// {{{2 Create tar writer
-	tarW := tar.NewWriter(tarF)
+	tarW := tar.NewWriter(gzipW)
 
 	defer func() {
 		if err := tarW.Close(); err != nil {
-			logger.Fatalf("error closing tar writer \"%s\": %s", tarFPath, err.Error())
+			logger.Fatalf("error closing tar writer \"%s\": %s", fName, err.Error())
 		}
 	}()
 
@@ -131,5 +140,21 @@ func main() {
 		backupNumberFiles += numBackedUp
 	}
 
-	logger.Infof("backup: %s", tarFPath)
+	// {{{1 Upload backup to s3 compatible object storage service
+	logger.Infof("uploading %s", fName)
+
+	// {{{2 Initialize minio client
+	minioClient, err := minio.New(cfg.Upload.Endpoint, cfg.Upload.KeyID, cfg.Upload.SecretAccessKey, true)
+	if err != nil {
+		logger.Fatalf("error initializing s3 compatible object storage API client: %s", err.Error())
+	}
+
+	uploadOpts := minio.PutObjectOptions{
+		ContentType: "application/x-tar",
+	}
+
+	_, err = minioClient.FPutObject(cfg.Upload.Bucket, backupName, fName, uploadOpts)
+	if err != nil {
+		logger.Fatalf("error uploading backup: %s", err.Error())
+	}
 }
