@@ -31,8 +31,7 @@ func main() {
 
 	// {{{1 Tar file
 	// {{{2 Open tar file
-	fName := fmt.Sprintf("backup-%s", strftime.Format("%Y-%m-%d-%H:%M:%S",
-		time.Now()))
+	fName := strftime.Format("backup-%Y-%m-%d-%H:%M:%S", time.Now())
 	tarFPath := fmt.Sprintf("/var/tmp/%s.tar", fName)
 
 	tarF, err := os.Create(tarFPath)

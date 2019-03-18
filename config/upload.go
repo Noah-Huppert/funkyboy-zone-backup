@@ -10,4 +10,7 @@ type UploadConfig struct {
 
 	// SecretAccessKey for object storage API.
 	SecretAccessKey string `validate:"required"`
+
+	// Format of backup file name without extension. Strftime symbols may be used.
+	Format string `default:"backup-%Y-%m-%d-%H:%M:%S"`
 }

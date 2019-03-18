@@ -4,6 +4,8 @@ github.com/Noah-Huppert/goconf v0.1.1 h1:tO6HG30PyJp/84jJI8IqCBPU1OyRbeneoHJRYZe
 github.com/Noah-Huppert/goconf v0.1.1/go.mod h1:voCXwLgyvqoI36m7vgRMv1q+o3NYkPrKxO4qmw/rnUs=
 github.com/Noah-Huppert/goconf v0.1.2 h1:CsPDHcGv76V9PwTtmxAtrj4JYO9CCGpgNBcb5mn40hg=
 github.com/Noah-Huppert/goconf v0.1.2/go.mod h1:voCXwLgyvqoI36m7vgRMv1q+o3NYkPrKxO4qmw/rnUs=
+github.com/Noah-Huppert/goconf v0.2.0 h1:lI/fFoacls4NgcmN2hJ9t7ppq5b83J3sJes/7ZjrYbM=
+github.com/Noah-Huppert/goconf v0.2.0/go.mod h1:T1u1n1excNneAiO925EtT/mv3uuvY/V15stMZZhHK5U=
 github.com/Noah-Huppert/golog v0.0.0-20180826190739-0531f7300f66 h1:083LqAbdMKN4WwRhXCmSLlZLufFDjJvnOeS7rfOkQaU=
 github.com/Noah-Huppert/golog v0.0.0-20180826190739-0531f7300f66/go.mod h1:/7tGsz23F0YQyA1ulScodsNswVz6Ntf0SU2F9TvAJME=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
@@ -33,5 +35,7 @@ gopkg.in/go-playground/assert.v1 v1.2.1 h1:xoYuJVE7KT85PYWrN730RguIQO0ePzVRfFMXa
 gopkg.in/go-playground/assert.v1 v1.2.1/go.mod h1:9RXL0bg/zibRAgZUYszZSwO/z8Y/a8bDuhia5mkpMnE=
 gopkg.in/go-playground/validator.v9 v9.27.0 h1:wCg/0hk9RzcB0CYw8pYV6FiBYug1on0cpco9YZF8jqA=
 gopkg.in/go-playground/validator.v9 v9.27.0/go.mod h1:+c9/zcJMFNgbLvly1L1V+PpxWdVbfP1avr/N00E2vyQ=
+gopkg.in/mcuadros/go-defaults.v1 v1.1.0 h1:FFS7YZ2vmFhqyNzu2x9fLKxM2MTPESfLai7hB5/h23w=
+gopkg.in/mcuadros/go-defaults.v1 v1.1.0/go.mod h1:/q6NMyO9boplAtpxWSI9M96dBJ4BI9ezdJ19SYoTj10=
 gotest.tools v2.2.0+incompatible h1:VsBPFP1AI068pPrMxtb/S8Zkgf9xEmTLJjfM+P5UIEo=
 gotest.tools v2.2.0+incompatible/go.mod h1:DsYFclhRJ6vuDpmuTbkuFWG+y2sxOXAzmJt81HFBacw=

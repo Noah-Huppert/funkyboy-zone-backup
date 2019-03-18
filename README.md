@@ -32,6 +32,10 @@ KeyID = "..."
 
 # Storage API Secret Access Key
 SecretAccessKey = "..."
+
+# (Optional) Backup name format without file extension, can use strftime symbols
+# Defaults to value below
+Format = "backup-%Y-%m-%d-%H:%M:%S"
 ```
 
 ## Metrics Configuration
