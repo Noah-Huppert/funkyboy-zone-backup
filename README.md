@@ -51,6 +51,8 @@ Format = "backup-%Y-%m-%d-%H:%M:%S"
 The tool can push metrics to Prometheus about the backup process. To push metrics 
 [Prometheus Push Gateway](https://github.com/prometheus/pushgateway) must be accessible to mountain backup.
 
+You can disable metrics by setting `Metrics.Enabled = false`.
+
 Metrics:
 
 - `backup_success`
@@ -62,6 +64,10 @@ Configuration:
 
 ```toml
 [Metrics]
+# Set to false if you do not wish to publish Prometheus metrics.
+# Defaults to false
+Enabled = true
+
 # Host which Prometheus Push Gateway can be accessed. Must include scheme
 PushGatewayHost = "http://localhost:9091"
 

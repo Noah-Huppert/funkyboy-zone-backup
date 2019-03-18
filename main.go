@@ -49,7 +49,12 @@ func main() {
 	backupNumberFiles := 0
 
 	goodbye.Register(func(ctx context.Context, sig os.Signal) {
-		// curl --fail --silent --show-error --data-binary @- "$push_srv/metrics/job/$job"
+		// {{{2 If disabled exit immediately
+		if !cfg.Metrics.Enabled {
+			logger.Info("metrics disabled")
+			return
+		}
+
 		// {{{2 Construct request URL
 		reqUrl, err := url.Parse(cfg.Metrics.PushGatewayHost)
 		reqUrl.Path = fmt.Sprintf("/metrics/job/backup/host/%s", cfg.Metrics.LabelHost)
@@ -85,6 +90,8 @@ func main() {
 
 			logger.Fatalf("response body: %s", errBytes)
 		}
+
+		logger.Info("pushed metrics")
 	})
 
 	// {{{1 Open tar gz file
