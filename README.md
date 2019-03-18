@@ -53,8 +53,8 @@ Configuration:
 
 ```toml
 [Metrics]
-# Host which Prometheus Push Gateway can be accessed
-PushGatewayHost = "localhost:9091"
+# Host which Prometheus Push Gateway can be accessed. Must include scheme
+PushGatewayHost = "http://localhost:9091"
 
 # Value of `host` label in metrics
 Host = "foobar"

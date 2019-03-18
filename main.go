@@ -2,7 +2,9 @@ package main
 
 import (
 	"archive/tar"
+	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
@@ -12,9 +14,14 @@ import (
 	"github.com/Noah-Huppert/goconf"
 	"github.com/Noah-Huppert/golog"
 	"github.com/jehiah/go-strftime"
+	"github.com/thecodeteam/goodbye"
 )
 
 func main() {
+	// {{{1 Setup goodbye library
+	ctx := context.Background()
+	defer goodbye.Exit(ctx, -1)
+
 	// {{{1 Setup log
 	logger := golog.NewStdLogger("backup")
 
@@ -28,6 +35,16 @@ func main() {
 	if err := cfgLoader.Load(&cfg); err != nil {
 		logger.Fatalf("error loading configuration: %s", err.Error())
 	}
+
+	// {{{1 Publish metrics on exit
+	goodbye.Register(func(ctx context.Context, sig os.Signal) {
+		// curl --fail --silent --show-error --data-binary @- "$push_srv/metrics/job/$job"
+		// resp, err := http.Post("http://example.com/upload", "image/jpeg", &buf)
+		// {{{2 Construct request URL
+		reqUrl := fmt.Sprintf("%s/metrics/job/backup/host/%s", cfg.Metrics.PushGatewayHost, cfg.Metrics.Host)
+		// TODO: Make prometheus metrics req
+		resp, err := http.Post()
+	})
 
 	// {{{1 Tar file
 	// {{{2 Open tar file
