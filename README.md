@@ -106,8 +106,8 @@ Configuration:
 
 ```toml
 [Prometheus.XXXXX]
-# Admin API host
-AdminAPIHost = "localhost:9090"
+# Admin API host. Must include scheme
+AdminAPIHost = "http://localhost:9090"
 
 # Directory in which Prometheus data is stored
 DataDirectory = "/var/lib/prometheus"
