@@ -4,8 +4,8 @@ package config
 type MetricsConfig struct {
 	// PushGatewayHost is the host at which the Prometheus Push Gateway that metrics will be pushed to can be
 	// access. Must include a scheme.
-	PushGatewayHost `validate:"url,required"`
+	PushGatewayHost string `validate:"url,required"`
 
-	// Host is the value of the `host` label in pushed metrics
-	Host `validate:"required"`
+	// LabelHost is the value of the `host` label in pushed metrics
+	LabelHost string `validate:"required"`
 }

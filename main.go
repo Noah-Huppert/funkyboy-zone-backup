@@ -2,9 +2,12 @@ package main
 
 import (
 	"archive/tar"
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -37,13 +40,39 @@ func main() {
 	}
 
 	// {{{1 Publish metrics on exit
+	// backupSuccess will be set to false if backup failed before program exits
+	backupSuccess := true
+
+	// backupNumberFiles is the number of files which were backed up
+	backupNumberFiles := 0
+
 	goodbye.Register(func(ctx context.Context, sig os.Signal) {
 		// curl --fail --silent --show-error --data-binary @- "$push_srv/metrics/job/$job"
-		// resp, err := http.Post("http://example.com/upload", "image/jpeg", &buf)
 		// {{{2 Construct request URL
-		reqUrl := fmt.Sprintf("%s/metrics/job/backup/host/%s", cfg.Metrics.PushGatewayHost, cfg.Metrics.Host)
-		// TODO: Make prometheus metrics req
-		resp, err := http.Post()
+		reqUrl, err := url.Parse(cfg.Metrics.PushGatewayHost)
+		reqUrl.Path = fmt.Sprintf("/metrics/job/backup/host/%s", cfg.Metrics.LabelHost)
+
+		// {{{2 Construct body
+		bodyStr := fmt.Sprintf("backup_success %d\nbackup_number_files %d", backupSuccess, backupNumberFiles)
+		bodyBytes := bytes.NewReader([]byte(bodyStr))
+
+		// {{{2 Make request
+		resp, err := http.Post(reqUrl.String(), "text/plain", bodyBytes)
+		if err != nil {
+			logger.Fatalf("error pushing metrics to Prometheus Push Gateway: %s", err.Error())
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			logger.Error("error pushing metrics to Prometheus Push Gateway, received non OK "+
+				"response, status: %s", resp.Status)
+
+			errBytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				logger.Fatalf("error reading Prometheus Push Gateway response body: %s", err.Error())
+			}
+
+			logger.Fatalf("response body: %s", errBytes)
+		}
 	})
 
 	// {{{1 Tar file
@@ -89,9 +118,13 @@ func main() {
 			Cfg: c,
 		}
 
-		if err = b.Backup(backuperLogger, tarW); err != nil {
+		numBackedUp, err := b.Backup(backuperLogger, tarW)
+		if err != nil {
+			backupSuccess = false
 			logger.Fatalf("error running file backup for \"%s\": %s", key, err.Error())
 		}
+
+		backupNumberFiles += numBackedUp
 	}
 
 	logger.Infof("backup: %s", tarFPath)

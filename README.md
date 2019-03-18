@@ -57,7 +57,7 @@ Configuration:
 PushGatewayHost = "http://localhost:9091"
 
 # Value of `host` label in metrics
-Host = "foobar"
+LabelHost = "foobar"
 ```
 
 ## Backup Configuration
