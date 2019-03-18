@@ -64,6 +64,12 @@ func main() {
 
 		// {{{2 Make request
 		resp, err := http.Post(reqUrl.String(), "text/plain", bodyBytes)
+		defer func() {
+			if err = resp.Body.Close(); err != nil {
+				logger.Fatalf("error closing Prometheus metrics push response body: %s", err.Error())
+			}
+		}()
+
 		if err != nil {
 			logger.Fatalf("error pushing metrics to Prometheus Push Gateway: %s", err.Error())
 		}
@@ -135,6 +141,25 @@ func main() {
 		if err != nil {
 			backupSuccess = false
 			logger.Fatalf("error running file backup for \"%s\": %s", key, err.Error())
+		}
+
+		backupNumberFiles += numBackedUp
+	}
+
+	// {{{1 Perform Prometheus backups
+	for key, c := range cfg.Prometheus {
+		backuperLogger := logger.GetChild(fmt.Sprintf("Prometheus.%s", key))
+
+		backuperLogger.Infof("backing up Prometheus.%s", key)
+
+		b := backup.PrometheusBackuper{
+			Cfg: c,
+		}
+
+		numBackedUp, err := b.Backup(backuperLogger, tarW)
+		if err != nil {
+			backupSuccess = false
+			logger.Fatalf("error running prometheus backup for \"%s\": %s", key, err.Error())
 		}
 
 		backupNumberFiles += numBackedUp
