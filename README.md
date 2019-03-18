@@ -34,6 +34,21 @@ KeyID = "..."
 SecretAccessKey = "..."
 ```
 
+## Metrics Configuration
+The tool can push metrics to Prometheus about the backup process. To push metrics 
+[Prometheus Push Gateway](https://github.com/prometheus/pushgateway) must be accessible to mountain backup.
+
+Configuration:
+
+```toml
+[Metrics]
+# Host which Prometheus Push Gateway can be accessed
+PushGatewayHost = "localhost:9091"
+
+# Value of `host` label in metrics
+Host = "foobar"
+```
+
 ## Backup Configuration
 The mountain backup tools provides different modules to handle unique 
 backup scenarios. These modules are configured by creating sub sections in the 
