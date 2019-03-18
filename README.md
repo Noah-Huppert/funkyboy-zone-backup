@@ -4,6 +4,11 @@ File backup tool.
 # Table Of Contents
 - [Overview](#overview)
 - [Configure](#configure)
+    - [Upload Configuration](#upload-configuration)
+    - [Metrics Configuration](#metrics-configuration)
+    - [Backup Configuration](#backup-configuration)
+        - [Files](#files)
+	- [Prometheus](#prometheus)
 - [Develop](#develop)
 
 # Overview
