@@ -42,6 +42,13 @@ Format = "backup-%Y-%m-%d-%H:%M:%S"
 The tool can push metrics to Prometheus about the backup process. To push metrics 
 [Prometheus Push Gateway](https://github.com/prometheus/pushgateway) must be accessible to mountain backup.
 
+Metrics:
+
+- `backup_success`
+    - Indicates if backup succeeded
+- `backup_number_files`
+    - Number of files backed up
+
 Configuration:
 
 ```toml
