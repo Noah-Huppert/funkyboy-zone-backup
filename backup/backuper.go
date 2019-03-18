@@ -8,6 +8,6 @@ import (
 
 // Backuper performs the action of backing up a file.
 type Backuper interface {
-	// Backup files to w.
-	Backup(logger golog.Logger, w *tar.Writer) error
+	// Backup files to w. Returns the number of files which were backed up.
+	Backup(logger golog.Logger, w *tar.Writer) (int, error)
 }

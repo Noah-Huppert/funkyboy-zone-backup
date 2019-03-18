@@ -91,7 +91,7 @@ func allFiles(walkPaths mapset.Set) (mapset.Set, error) {
 }
 
 // Backup configured files.
-func (b FilesBackuper) Backup(logger golog.Logger, w *tar.Writer) error {
+func (b FilesBackuper) Backup(logger golog.Logger, w *tar.Writer) (int, error) {
 	// {{{1 Convert config to sets
 	// {{{2 Cfg.Files
 	filesSet := mapset.NewSet()
@@ -109,45 +109,46 @@ func (b FilesBackuper) Backup(logger golog.Logger, w *tar.Writer) error {
 	// {{{2 Cfg.Files
 	absFiles, err := absSet(filesSet)
 	if err != nil {
-		return fmt.Errorf("error resolving absolute paths in Files configuration field: %s", err.Error())
+		return 0, fmt.Errorf("error resolving absolute paths in Files configuration field: %s", err.Error())
 	}
 
 	// {{{2 Cfg.Exclude
 	absExclude, err := absSet(excludeSet)
 	if err != nil {
-		return fmt.Errorf("error resolving absolute paths in Exclude configuration field: %s", err.Error())
+		return 0, fmt.Errorf("error resolving absolute paths in Exclude configuration field: %s", err.Error())
 	}
 
 	// {{{1 Expand any shell globs in Cfg
 	// {{{2 Cfg.Files
 	globedFiles, err := globSet(absFiles)
 	if err != nil {
-		return fmt.Errorf("error expanding shell globs in Files configuration field: %s", err.Error())
+		return 0, fmt.Errorf("error expanding shell globs in Files configuration field: %s", err.Error())
 	}
 
 	// {{{2 Cfg.Exclude
 	globedExclude, err := globSet(absExclude)
 	if err != nil {
-		return fmt.Errorf("error expanding shell globs in Exclude configuration field: %s", err.Error())
+		return 0, fmt.Errorf("error expanding shell globs in Exclude configuration field: %s", err.Error())
 	}
 
 	// {{{1 Walk any directories to create a complete list of files
 	// {{{2 Cfg.Files
 	walkedFiles, err := allFiles(globedFiles)
 	if err != nil {
-		return fmt.Errorf("error creating list of all files in Files configuration field: %s", err.Error())
+		return 0, fmt.Errorf("error creating list of all files in Files configuration field: %s", err.Error())
 	}
 
 	// {{{2 Cfg.Exclude
 	walkedExclude, err := allFiles(globedExclude)
 	if err != nil {
-		return fmt.Errorf("error creating list of all files in Exclude configuration field: %s", err.Error())
+		return 0, fmt.Errorf("error creating list of all files in Exclude configuration field: %s", err.Error())
 	}
 
 	// {{{1 Remove excluded files
 	backupFiles := walkedFiles.Difference(walkedExclude)
 
 	// {{{1 Write files
+	filesCount := 0
 	backupFilesIt := backupFiles.Iterator()
 
 	for fileUntyped := range backupFilesIt.C {
@@ -157,7 +158,7 @@ func (b FilesBackuper) Backup(logger golog.Logger, w *tar.Writer) error {
 		// {{{3 Get file info
 		fileInfo, err := os.Stat(file)
 		if err != nil {
-			return fmt.Errorf("error stat-ing \"%s\": %s", file, err.Error())
+			return 0, fmt.Errorf("error stat-ing \"%s\": %s", file, err.Error())
 		}
 
 		// {{{3 Write header
@@ -171,22 +172,23 @@ func (b FilesBackuper) Backup(logger golog.Logger, w *tar.Writer) error {
 		// {{{3 Open file
 		fileReader, err := os.Open(file)
 		if err != nil {
-			return fmt.Errorf("error opening \"%s\" for reading: %s", file, err.Error())
+			return 0, fmt.Errorf("error opening \"%s\" for reading: %s", file, err.Error())
 		}
 
 		// {{{3 Read file body
 		body, err := ioutil.ReadAll(fileReader)
 		if err != nil {
-			return fmt.Errorf("error reading \"%s\" file contents: %s", file, err.Error())
+			return 0, fmt.Errorf("error reading \"%s\" file contents: %s", file, err.Error())
 		}
 
 		// {{{3 Write to tar
 		if _, err = w.Write(body); err != nil {
-			return fmt.Errorf("error writing \"%s\" to tar file: %s", file, err.Error())
+			return 0, fmt.Errorf("error writing \"%s\" to tar file: %s", file, err.Error())
 		}
 
 		logger.Info(file)
+		filesCount++
 	}
 
-	return nil
+	return filesCount, nil
 }
