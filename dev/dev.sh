@@ -21,8 +21,11 @@ set -e
 
 # {{{1 Configuration
 prog_dir=$(realpath $(dirname "$0"))
+
 prom_container_tag="prom/prometheus:latest"
 prom_container_name="mountain-backup-prometheus"
+prom_data_dir="$prog_dir/prometheus-data/data"
+
 push_container_name="mountain-backup-push-gateway"
 
 # {{{1 Check if docker exists on system
@@ -50,6 +53,9 @@ function cleanup() {
 trap cleanup EXIT
 
 # {{{2 Prometheus
+mkdir -p "$prom_data_dir"
+chmod 777 "$prom_data_dir"
+
 if ! docker ps | grep "$prom_container_name" &> /dev/null; then
 	docker run \
 		-t \
@@ -57,7 +63,8 @@ if ! docker ps | grep "$prom_container_name" &> /dev/null; then
 		--net host \
 		--name "$prom_container_name" \
 		-p 9090:9090 \
-		-v "$prog_dir/prometheus-config":/etc/prometheus/ \
+		-v "$prog_dir/prometheus-config/prometheus.yml":/etc/prometheus/prometheus.yml \
+		-v "$prom_data_dir":/prometheus/data \
 		"$prom_container_tag" \
 			--config.file=/etc/prometheus/prometheus.yml \
 			--web.listen-address="localhost:9090" \
