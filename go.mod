@@ -1,4 +1,4 @@
-module github.com/Noah-Huppert/funkyboy-zone-backup
+module github.com/Noah-Huppert/mountain-backup
 
 go 1.12
 

@@ -1,10 +1,12 @@
 package main
 
 import (
+	"archive/tar"
 	"fmt"
 	"os"
 	"time"
 
+	"github.com/Noah-Huppert/mountain-backup/backup"
 	"github.com/Noah-Huppert/mountain-backup/config"
 
 	"github.com/Noah-Huppert/goconf"
@@ -27,7 +29,8 @@ func main() {
 		logger.Fatalf("error loading configuration: %s", err.Error())
 	}
 
-	// {{{1 Open tar file
+	// {{{1 Tar file
+	// {{{2 Open tar file
 	fName := fmt.Sprintf("backup-%s", strftime.Format("%Y-%m-%d-%H:%M:%S",
 		time.Now()))
 	tarFPath := fmt.Sprintf("/var/tmp/%s.tar", fName)
@@ -51,5 +54,17 @@ func main() {
 			err.Error())
 	}
 
+	// {{{2 Create tar writer
+	tarW := tar.NewWriter(tarF)
+
 	// {{{1 Perform straight forward backup of files
+	for key, c := range cfg.Files {
+		b := backup.FilesBackuper{
+			Cfg: c,
+		}
+
+		if err = b.Backup(tarW); err != nil {
+			logger.Fatalf("error running file backup for \"%s\": %s", key, err.Error())
+		}
+	}
 }
