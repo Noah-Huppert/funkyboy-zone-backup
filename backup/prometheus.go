@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/Noah-Huppert/golog"
 	"github.com/Noah-Huppert/mountain-backup/config"
@@ -82,7 +83,9 @@ func (b PrometheusBackuper) Backup(logger golog.Logger, w *tar.Writer) (int, err
 
 	// {{{1 Find snapshot files in Prometheus data directory
 	// {{{2 Ensure exists
-	snapshotDir := filepath.Join(b.Cfg.DataDirectory, fmt.Sprintf("snapshots/%s", apiResp.Data.Name))
+	snapshotDirPart := fmt.Sprintf("snapshots/%s", apiResp.Data.Name)
+	snapshotDir := filepath.Join(b.Cfg.DataDirectory, snapshotDirPart)
+
 	dirInfo, err := os.Stat(snapshotDir)
 	if err != nil {
 		return 0, fmt.Errorf("error stat-ing Prometheus snapshot directory: %s", err.Error())
@@ -101,7 +104,65 @@ func (b PrometheusBackuper) Backup(logger golog.Logger, w *tar.Writer) (int, err
 		return 0, fmt.Errorf("error collecting names of snapshot files: %s", err.Error())
 	}
 
-	logger.Debugf("%#v", snapshotFiles)
+	// {{{2 Resolve absolute paths
+	absSnapshotFiles, err := absSet(snapshotFiles)
+	if err != nil {
+		return 0, fmt.Errorf("error resolving snapshot absolute file paths: %s", err.Error())
+	}
 
-	return 0, nil
+	// {{{1 Rewrite Prometheus data paths
+	// rewrittenFiles holds snapshot file paths as keys, and the path they would exist if they were in the main
+	// data directory as values.
+	rewrittenFiles := map[string]string{}
+	absSnapshotFilesIt := absSnapshotFiles.Iterator()
+
+	for fileUntyped := range absSnapshotFilesIt.C {
+		file := fileUntyped.(string)
+
+		rewritten := strings.ReplaceAll(file, fmt.Sprintf("/%s", snapshotDirPart), "")
+
+		rewrittenFiles[file] = rewritten
+	}
+
+	// {{{1 Save files
+	filesCount := 0
+
+	for snapshotFile, rewrittenFile := range rewrittenFiles {
+		// {{{2 Write tar header
+		// {{{3 Get file info
+		fileInfo, err := os.Stat(snapshotFile)
+		if err != nil {
+			return 0, fmt.Errorf("error stat-ing \"%s\": %s", snapshotFile, err.Error())
+		}
+
+		// {{{3 Write header
+		err = w.WriteHeader(&tar.Header{
+			Name: rewrittenFile,
+			Mode: int64(fileInfo.Mode().Perm()),
+			Size: fileInfo.Size(),
+		})
+
+		// {{{2 Write file body
+		// {{{3 Open file
+		fileReader, err := os.Open(snapshotFile)
+		if err != nil {
+			return 0, fmt.Errorf("error opening \"%s\" for reading: %s", snapshotFile, err.Error())
+		}
+
+		// {{{3 Read file body
+		body, err := ioutil.ReadAll(fileReader)
+		if err != nil {
+			return 0, fmt.Errorf("error reading \"%s\" file contents: %s", snapshotFile, err.Error())
+		}
+
+		// {{{3 Write to tar
+		if _, err = w.Write(body); err != nil {
+			return 0, fmt.Errorf("error writing \"%s\" to tar file: %s", snapshotFile, err.Error())
+		}
+
+		logger.Info(snapshotFile)
+		filesCount++
+	}
+
+	return filesCount, nil
 }

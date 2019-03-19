@@ -42,8 +42,8 @@ func main() {
 	}
 
 	// {{{1 Publish metrics on exit
-	// backupSuccess will be set to false if backup failed before program exits
-	backupSuccess := true
+	// backupSuccess will be set to true if all backups succeed and the program reaches its last line
+	backupSuccess := false
 
 	// backupNumberFiles is the number of files which were backed up
 	backupNumberFiles := 0
@@ -146,7 +146,6 @@ func main() {
 
 		numBackedUp, err := b.Backup(backuperLogger, tarW)
 		if err != nil {
-			backupSuccess = false
 			logger.Fatalf("error running file backup for \"%s\": %s", key, err.Error())
 		}
 
@@ -165,7 +164,6 @@ func main() {
 
 		numBackedUp, err := b.Backup(backuperLogger, tarW)
 		if err != nil {
-			backupSuccess = false
 			logger.Fatalf("error running prometheus backup for \"%s\": %s", key, err.Error())
 		}
 
@@ -190,4 +188,7 @@ func main() {
 	if err != nil {
 		logger.Fatalf("error uploading backup: %s", err.Error())
 	}
+
+	// {{{1 Set backup as successfully
+	backupSuccess = true
 }
