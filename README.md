@@ -8,7 +8,7 @@ File backup tool.
     - [Metrics Configuration](#metrics-configuration)
     - [Backup Configuration](#backup-configuration)
         - [Files](#files)
-	- [Prometheus](#prometheus)
+		- [Prometheus](#prometheus)
 - [Develop](#develop)
 
 # Overview
