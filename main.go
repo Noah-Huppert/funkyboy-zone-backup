@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"time"
+	"flag"
 
 	"github.com/Noah-Huppert/mountain-backup/backup"
 	"github.com/Noah-Huppert/mountain-backup/config"
@@ -29,6 +30,20 @@ func main() {
 
 	// {{{1 Setup log
 	logger := golog.NewStdLogger("backup")
+
+	// {{{1 Help flag
+	var helpFlag bool
+	flag.BoolVar(&helpFlag, "help", false, "Show help text")
+	flag.Parse()
+
+	if helpFlag {
+		fmt.Printf("%s - File backup tool\n", os.Args[0])
+		fmt.Printf("\nFlags:\n\n")
+		flag.PrintDefaults()
+		fmt.Printf("\n")
+		os.Exit(1)
+	}
+	os.Exit(0)
 
 	// {{{1 Load configuration
 	cfgLoader := goconf.NewDefaultLoader()
