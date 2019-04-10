@@ -34,7 +34,7 @@ func main() {
 	cfgLoader := goconf.NewDefaultLoader()
 
 	cfgLoader.AddConfigPath("./*.toml")
-	cfgLoader.AddConfigPath("/etc/funkyboy-zone-backup/*.toml")
+	cfgLoader.AddConfigPath("/etc/mountain-backup/*.toml")
 
 	cfg := config.Config{}
 	if err := cfgLoader.Load(&cfg); err != nil {
