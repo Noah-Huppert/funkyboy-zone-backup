@@ -98,7 +98,7 @@ Configuration:
 
 ```toml
 [Files.XXXXX]
-# List of files to backup
+# List of files / directories to backup
 Files = [ "..." ]
 
 # Files / directories to exclude from backup
