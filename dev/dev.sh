@@ -57,18 +57,17 @@ mkdir -p "$prom_data_dir"
 chmod 777 "$prom_data_dir"
 
 if ! docker ps | grep "$prom_container_name" &> /dev/null; then
-	docker run \
+	( docker run \
 		-t \
 		--rm \
 		--net host \
 		--name "$prom_container_name" \
-		-p 9090:9090 \
 		-v "$prog_dir/prometheus-config/prometheus.yml":/etc/prometheus/prometheus.yml \
 		-v "$prom_data_dir":/prometheus/data \
 		"$prom_container_tag" \
 			--config.file=/etc/prometheus/prometheus.yml \
 			--web.listen-address="localhost:9090" \
-			--web.enable-admin-api &
+			--web.enable-admin-api | sed 's/^/[prometheus]: /g' ) &
 	
 	if [[ "$?" != "0" ]]; then
 		echo "Error: Failed to start Prometheus container" >&2
@@ -78,13 +77,12 @@ fi
 
 # {{{2 Push Gateway
 if ! docker ps | grep "$push_container_name" &> /dev/null; then
-	docker run \
+	( docker run \
 		-t \
 		--rm \
 		--net host \
 		--name "$push_container_name" \
-		-p 9091:9091 \
-		prom/pushgateway &
+		prom/pushgateway | sed 's/^/[pushgateway]: /g' ) &
 
 	if [[ "$?" != "0" ]]; then
 		echo "Error: Failed to start Prometheus Push Gateway container" >&2
