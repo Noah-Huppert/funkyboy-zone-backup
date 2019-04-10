@@ -64,15 +64,18 @@ Configuration:
 
 ```toml
 [Metrics]
-# Set to false if you do not wish to publish Prometheus metrics.
+# (Optional) Set to false if you do not wish to publish Prometheus metrics.
 # Defaults to false
 Enabled = true
 
-# Host which Prometheus Push Gateway can be accessed. Must include scheme
+# (Optional) Host which Prometheus Push Gateway can be accessed. Must 
+# include scheme
+# Defaults to value below
 PushGatewayHost = "http://localhost:9091"
 
-# Value of `host` label in metrics
-LabelHost = "foobar"
+# (Optional) Value of `host` label in metrics
+# Defaults to value below
+LabelHost = "mountain-backup"
 ```
 
 ## Backup Configuration
