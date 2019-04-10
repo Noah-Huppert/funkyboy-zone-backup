@@ -6,7 +6,7 @@ type Config struct {
 	Upload UploadConfig `validate:"required"`
 
 	// Metrics configuration
-	Metrics MetricsConfig `validate:"required"`
+	Metrics MetricsConfig
 
 	// Files holds configuration of standard files to backup.
 	Files map[string]FileConfig
